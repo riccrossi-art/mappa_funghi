@@ -73,38 +73,57 @@ HeatMap(heat_data, radius=35, blur=20, max_zoom=10).add_to(m)
 m.save("index.html")
 
 # ==========================================
-# 6. PROTEZIONE REALE: BLOCCO PRIMA DEL RENDER
+# 6. SCHERMATA DI LOGIN SICURA INLINE
 # ==========================================
-script_protezione = f"""
-<style>
-    /* Nasconde tutto finché non viene data la password */
-    html, body {{ display: none !important; }}
-</style>
-<script>
-(function() {{
-    const passwordCorretta = "{PASSWORD_SEGRETA}";
-    let inserita = prompt("🔒 Questa mappa è privata.\\nInserisci la password di accesso:");
+schermata_login = f"""
+<div id="loginOverlay" style="
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background-color: #1a1a1a;
+    z-index: 999999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: system-ui, -apple-system, sans-serif;
+    color: white;">
     
-    if (inserita === passwordCorretta) {{
-        // Password corretta: rende visibile la pagina
-        document.documentElement.style.display = "block";
-        document.body.style.display = "block";
+    <div style="background: #2d2d2d; padding: 30px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); text-align: center; max-width: 320px; width: 80%;">
+        <h2 style="margin-top:0;">🍄 Mappa Riservata</h2>
+        <p style="color:#aaa; font-size: 14px;">Inserisci la password per visualizzare i dati meteo e la probabilità funghi.</p>
+        <input type="password" id="passInput" placeholder="Password" style="
+            width: 100%; padding: 12px; margin: 15px 0; border-radius: 6px; border: 1px solid #444; background: #1a1a1a; color: white; box-sizing: border-box; font-size: 16px;">
+        <button onclick="checkPass()" style="
+            width: 100%; padding: 12px; background: #2e7d32; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 16px;">Sblocca Mappa</button>
+        <p id="errorMsg" style="color: #ff5252; margin-top: 15px; display: none; font-size: 14px;">❌ Password errata!</p>
+    </div>
+</div>
+
+<script>
+function checkPass() {{
+    const pass = document.getElementById('passInput').value;
+    if (pass === "{PASSWORD_SEGRETA}") {{
+        document.getElementById('loginOverlay').style.display = 'none';
     }} else {{
-        // Password errata o popup chiuso: distrugge la pagina e mostra errore
-        document.write("<div style='background:#1a1a1a;color:white;height:100vh;display:flex;justify-content:center;align-items:center;font-family:sans-serif;'><h1>🔒 Accesso Negato</h1></div>");
-        window.stop();
+        document.getElementById('errorMsg').style.display = 'block';
     }}
-}})();
+}}
+// Permette di premere Invio sulla tastiera
+document.getElementById('passInput').addEventListener('keypress', function (e) {{
+    if (e.key === 'Enter') {{
+        checkPass();
+    }}
+}});
 </script>
 """
 
 with open("index.html", "r", encoding="utf-8") as f:
     contenuto_html = f.read()
 
-# Inserisce la protezione PRIMA di caricare qualsiasi mappa o stile
-contenuto_protetto = contenuto_html.replace("<head>", f"<head>{script_protezione}")
+# Inserisce la schermata di login subito dopo l'apertura del tag <body>
+contenuto_protetto = contenuto_html.replace("<body>", f"<body>{schermata_login}")
 
 with open("index.html", "w", encoding="utf-8") as f:
     f.write(contenuto_protetto)
 
-print("Mappa aggiornata con protezione avanzata!")
+print("Mappa aggiornata con form di login integrato!")
