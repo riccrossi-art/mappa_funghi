@@ -7,8 +7,8 @@ import requests
 # ==========================================
 PASSWORD_SEGRETA = "Porcino2026!" 
 
-# 2. Punti di monitoraggio tra Piemonte e Liguria
-punti_monitoraggio = [
+# 2. Località predefinite (Piemonte e Liguria)
+punti_predefiniti = [
     {"nome": "Sassello (SV)", "lat": 44.478, "lon": 8.489},
     {"nome": "Calizzano (SV)", "lat": 44.235, "lon": 8.113},
     {"nome": "Santo Stefano d'Aveto (GE)", "lat": 44.547, "lon": 9.452},
@@ -41,7 +41,7 @@ def get_colore(prob):
 m = folium.Map(location=[44.5, 8.2], zoom_start=8, tiles="OpenStreetMap")
 heat_data = []
 
-for punto in punti_monitoraggio:
+for punto in punti_predefiniti:
     try:
         url = f"https://api.open-meteo.com/v1/forecast?latitude={punto['lat']}&longitude={punto['lon']}&daily=precipitation_sum,wind_speed_10m_max&past_days=7&forecast_days=1"
         res = requests.get(url, timeout=10).json()
@@ -73,24 +73,19 @@ HeatMap(heat_data, radius=35, blur=20, max_zoom=10).add_to(m)
 m.save("index.html")
 
 # ==========================================
-# 6. SCHERMATA DI LOGIN SICURA INLINE
+# 6. PANNELLO LOGIN + GESTIONE LOCALITÀ (JS)
 # ==========================================
-schermata_login = f"""
+interfaccia_completa = f"""
+<!-- SCHERMATA LOGIN -->
 <div id="loginOverlay" style="
-    position: fixed;
-    top: 0; left: 0; width: 100vw; height: 100vh;
-    background-color: #1a1a1a;
-    z-index: 999999;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    font-family: system-ui, -apple-system, sans-serif;
-    color: white;">
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background-color: #1a1a1a; z-index: 999999; display: flex;
+    flex-direction: column; justify-content: center; align-items: center;
+    font-family: system-ui, -apple-system, sans-serif; color: white;">
     
     <div style="background: #2d2d2d; padding: 30px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); text-align: center; max-width: 320px; width: 80%;">
         <h2 style="margin-top:0;">🍄 Mappa Riservata</h2>
-        <p style="color:#aaa; font-size: 14px;">Inserisci la password per visualizzare i dati meteo e la probabilità funghi.</p>
+        <p style="color:#aaa; font-size: 14px;">Inserisci la password per sbloccare la mappa e gestire le tue località.</p>
         <input type="password" id="passInput" placeholder="Password" style="
             width: 100%; padding: 12px; margin: 15px 0; border-radius: 6px; border: 1px solid #444; background: #1a1a1a; color: white; box-sizing: border-box; font-size: 16px;">
         <button onclick="checkPass()" style="
@@ -99,31 +94,142 @@ schermata_login = f"""
     </div>
 </div>
 
+<!-- PANNELLO DI CONTROLLO AGGIUNTA LOCALITÀ (In alto a destra sulla mappa) -->
+<div id="controlPanel" style="
+    position: fixed; top: 10px; right: 10px; z-index: 99999;
+    background: rgba(30, 30, 30, 0.9); backdrop-filter: blur(5px);
+    padding: 15px; border-radius: 8px; color: white;
+    font-family: system-ui, -apple-system, sans-serif; max-width: 280px; box-shadow: 0 4px 15px rgba(0,0,0,0.4);">
+    
+    <h3 style="margin: 0 0 10px 0; font-size: 15px; display: flex; align-items: center; justify-content: space-between;">
+        ➕ Aggiungi Località 
+        <button onclick="caricaSalvate()" style="background:none; border:none; color:#4caf50; cursor:pointer; font-size:12px;">🔄 Aggiorna</button>
+    </h3>
+    <input type="text" id="nuovaLocalita" placeholder="Es. Bobbio Pellice" style="
+        width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #555; background: #2a2a2a; color: white; box-sizing: border-box; font-size: 13px;">
+    <button onclick="cercaE Salva()" style="
+        width: 100%; margin-top: 8px; padding: 8px; background: #1976d2; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 13px;">Cerca e Salva</button>
+    <p id="statusMsg" style="margin: 8px 0 0 0; font-size: 11px; color: #aaa;"></p>
+    
+    <hr style="border: 0; border-top: 1px solid #444; margin: 12px 0;">
+    <p style="margin: 0; font-size: 12px; color: #bbb;">Le località aggiunte vengono salvate in automatico nel tuo browser.</p>
+</div>
+
 <script>
 function checkPass() {{
     const pass = document.getElementById('passInput').value;
     if (pass === "{PASSWORD_SEGRETA}") {{
         document.getElementById('loginOverlay').style.display = 'none';
+        caricaSalvate();
     }} else {{
         document.getElementById('errorMsg').style.display = 'block';
     }}
 }}
-// Permette di premere Invio sulla tastiera
+
 document.getElementById('passInput').addEventListener('keypress', function (e) {{
-    if (e.key === 'Enter') {{
-        checkPass();
-    }}
+    if (e.key === 'Enter') checkPass();
 }});
+
+// LOGICA CALCOLO INDICE LATO BROWSER
+function calcolaIndiceJS(pioggia, vento) {{
+    let fp = 0.1, fv = 0.1;
+    if (pioggia < 20) fp = 0.1;
+    else if (pioggia < 60) fp = (pioggia - 20) / 40;
+    else if (pioggia <= 120) fp = 1.0;
+    else fp = Math.max(0.1, 1.0 - (pioggia - 120) / 120);
+
+    if (vento <= 8) fv = 1.0;
+    else if (vento <= 25) fv = 1.0 - (vento - 8) / 25;
+    else fv = 0.1;
+
+    return (fp * fv * 100).toFixed(1);
+}}
+
+function getColoreJS(prob) {{
+    if (prob >= 75) return "green";
+    if (prob >= 50) return "orange";
+    return "red";
+}}
+
+// CERCA, RILEVA METEO E SALVA IN LOCALSTORAGE
+async function cercaESalva() {{
+    const nome = document.getElementById('nuovaLocalita').value.trim();
+    const status = document.getElementById('statusMsg');
+    if (!nome) return;
+
+    status.innerText = "🔍 Ricerca coordinate...";
+    try {{
+        // Geocoding via OpenStreetMap Nominatim
+        const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${{encodeURIComponent(nome)}},Italia`);
+        const geoData = await geoRes.json();
+
+        if (geoData.length === 0) {{
+            status.innerText = "❌ Località non trovata.";
+            return;
+        }}
+
+        const lat = parseFloat(geoData[0].lat);
+        const lon = parseFloat(geoData[0].lon);
+        const nomeCompleto = geoData[0].display_name.split(',')[0];
+
+        status.innerText = "🌧️ Recupero dati meteo...";
+
+        // Fetch Meteo
+        const meteoRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${{lat}}&longitude=${{lon}}&daily=precipitation_sum,wind_speed_10m_max&past_days=7&forecast_days=1`);
+        const meteoData = await meteoRes.json();
+
+        const pioggia = meteoData.daily.precipitation_sum.reduce((a, b) => a + b, 0);
+        const vento = Math.max(...meteoData.daily.wind_speed_10m_max);
+        const prob = calcolaIndiceJS(pioggia, vento);
+
+        // Salva in LocalStorage
+        let salvate = JSON.parse(localStorage.getItem('funghi_punti') || '[]');
+        salvate.push({{ nome: nomeCompleto, lat, lon, pioggia, vento, prob }});
+        localStorage.setItem('funghi_punti', JSON.stringify(salvate));
+
+        // Aggiungi marker alla mappa
+        disegnaMarker(nomeCompleto, lat, lon, pioggia, vento, prob);
+
+        status.innerText = `✅ Salvala: ${{nomeCompleto}} (${{prob}}%)`;
+        document.getElementById('nuovaLocalita').value = '';
+    }} catch (err) {{
+        status.innerText = "❌ Errore nel recupero dati.";
+        console.error(err);
+    }}
+}}
+
+function disegnaMarker(nome, lat, lon, pioggia, vento, prob) {{
+    // Trova l'oggetto mappa creato da Folium
+    const mapObj = Object.values(window).find(val => val && val.addLayer && val.getCenter);
+    if (mapObj) {{
+        const color = getColoreJS(prob);
+        const circle = L.circleMarker([lat, lon], {{
+            radius: 12,
+            color: color,
+            fillColor: color,
+            fillOpacity: 0.8
+        }}).addTo(mapObj);
+
+        circle.bindPopup(`<b>${{nome}} (Personalizzata)</b><br>Probabilità Funghi: <b>${{prob}}%</b><br>Pioggia 7gg: ${{pioggia.toFixed(1)}} mm<br>Vento Max: ${{vento.toFixed(1)}} km/h`);
+        mapObj.setView([lat, lon], 9);
+    }}
+}}
+
+function caricaSalvate() {{
+    let salvate = JSON.parse(localStorage.getItem('funghi_punti') || '[]');
+    salvate.forEach(p => {{
+        disegnaMarker(p.nome, p.lat, p.lon, p.pioggia, p.vento, p.prob);
+    }});
+}}
 </script>
 """
 
 with open("index.html", "r", encoding="utf-8") as f:
     contenuto_html = f.read()
 
-# Inserisce la schermata di login subito dopo l'apertura del tag <body>
-contenuto_protetto = contenuto_html.replace("<body>", f"<body>{schermata_login}")
+contenuto_protetto = contenuto_html.replace("<body>", f"<body>{interfaccia_completa}")
 
 with open("index.html", "w", encoding="utf-8") as f:
     f.write(contenuto_protetto)
 
-print("Mappa aggiornata con form di login integrato!")
+print("Mappa aggiornata con ricerca e salvataggio località!")
