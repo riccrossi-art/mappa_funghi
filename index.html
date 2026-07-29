@@ -1,27 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-<style>
-    /* Nasconde tutto finché non viene data la password */
-    html, body { display: none !important; }
-</style>
-<script>
-(function() {
-    const passwordCorretta = "Porcino2026!";
-    let inserita = prompt("🔒 Questa mappa è privata.\nInserisci la password di accesso:");
-    
-    if (inserita === passwordCorretta) {
-        // Password corretta: rende visibile la pagina
-        document.documentElement.style.display = "block";
-        document.body.style.display = "block";
-    } else {
-        // Password errata o popup chiuso: distrugge la pagina e mostra errore
-        document.write("<div style='background:#1a1a1a;color:white;height:100vh;display:flex;justify-content:center;align-items:center;font-family:sans-serif;'><h1>🔒 Accesso Negato</h1></div>");
-        window.stop();
-    }
-})();
-</script>
-
     
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
     <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
@@ -38,7 +17,7 @@
             <meta name="viewport" content="width=device-width,
                 initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
             <style>
-                #map_bc9e1fde43b5ed77f50dd86ce97ecd7a {
+                #map_3c35f9cbaf6c82979d87efd55f5e362c {
                     position: relative;
                     width: 100.0%;
                     height: 100.0%;
@@ -74,16 +53,56 @@
     <script src="https://cdn.jsdelivr.net/gh/python-visualization/folium@main/folium/templates/leaflet_heat.min.js"></script>
 </head>
 <body>
+<div id="loginOverlay" style="
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background-color: #1a1a1a;
+    z-index: 999999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: system-ui, -apple-system, sans-serif;
+    color: white;">
+    
+    <div style="background: #2d2d2d; padding: 30px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); text-align: center; max-width: 320px; width: 80%;">
+        <h2 style="margin-top:0;">🍄 Mappa Riservata</h2>
+        <p style="color:#aaa; font-size: 14px;">Inserisci la password per visualizzare i dati meteo e la probabilità funghi.</p>
+        <input type="password" id="passInput" placeholder="Password" style="
+            width: 100%; padding: 12px; margin: 15px 0; border-radius: 6px; border: 1px solid #444; background: #1a1a1a; color: white; box-sizing: border-box; font-size: 16px;">
+        <button onclick="checkPass()" style="
+            width: 100%; padding: 12px; background: #2e7d32; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 16px;">Sblocca Mappa</button>
+        <p id="errorMsg" style="color: #ff5252; margin-top: 15px; display: none; font-size: 14px;">❌ Password errata!</p>
+    </div>
+</div>
+
+<script>
+function checkPass() {
+    const pass = document.getElementById('passInput').value;
+    if (pass === "Porcino2026!") {
+        document.getElementById('loginOverlay').style.display = 'none';
+    } else {
+        document.getElementById('errorMsg').style.display = 'block';
+    }
+}
+// Permette di premere Invio sulla tastiera
+document.getElementById('passInput').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        checkPass();
+    }
+});
+</script>
+
     
     
-            <div class="folium-map" id="map_bc9e1fde43b5ed77f50dd86ce97ecd7a" ></div>
+            <div class="folium-map" id="map_3c35f9cbaf6c82979d87efd55f5e362c" ></div>
         
 </body>
 <script>
     
     
-            var map_bc9e1fde43b5ed77f50dd86ce97ecd7a = L.map(
-                "map_bc9e1fde43b5ed77f50dd86ce97ecd7a",
+            var map_3c35f9cbaf6c82979d87efd55f5e362c = L.map(
+                "map_3c35f9cbaf6c82979d87efd55f5e362c",
                 {
                     center: [44.5, 8.2],
                     crs: L.CRS.EPSG3857,
@@ -100,7 +119,7 @@
 
         
     
-            var tile_layer_82bd039af0705a5ee076d586c28928ad = L.tileLayer(
+            var tile_layer_573227e2feb2f536042a2a927ee5685d = L.tileLayer(
                 "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
                 {
   "minZoom": 0,
@@ -117,194 +136,194 @@
             );
         
     
-            tile_layer_82bd039af0705a5ee076d586c28928ad.addTo(map_bc9e1fde43b5ed77f50dd86ce97ecd7a);
+            tile_layer_573227e2feb2f536042a2a927ee5685d.addTo(map_3c35f9cbaf6c82979d87efd55f5e362c);
         
     
-            var circle_marker_9db5e9cd5a6a1371eeb700ff901c6be3 = L.circleMarker(
+            var circle_marker_b7c4cff077bfc7a2048246aada0e5786 = L.circleMarker(
                 [44.478, 8.489],
                 {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 12, "stroke": true, "weight": 3}
-            ).addTo(map_bc9e1fde43b5ed77f50dd86ce97ecd7a);
+            ).addTo(map_3c35f9cbaf6c82979d87efd55f5e362c);
         
     
-        var popup_680dd4441b29d3acf7095ecdd1997155 = L.popup({
+        var popup_be0d58945b242e73f3243a7313522e55 = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_8421451399449401df5454a0f62dcd1d = $(`<div id="html_8421451399449401df5454a0f62dcd1d" style="width: 100.0%; height: 100.0%;"><b>Sassello (SV)</b><br>Probabilità Funghi: <b>35.3%</b><br>Pioggia 7gg: 54.6 mm<br>Vento Max: 22.8 km/h</div>`)[0];
-                popup_680dd4441b29d3acf7095ecdd1997155.setContent(html_8421451399449401df5454a0f62dcd1d);
+                var html_28652930e40b7d9ea712a24ab27f5264 = $(`<div id="html_28652930e40b7d9ea712a24ab27f5264" style="width: 100.0%; height: 100.0%;"><b>Sassello (SV)</b><br>Probabilità Funghi: <b>35.3%</b><br>Pioggia 7gg: 54.6 mm<br>Vento Max: 22.8 km/h</div>`)[0];
+                popup_be0d58945b242e73f3243a7313522e55.setContent(html_28652930e40b7d9ea712a24ab27f5264);
             
         
 
-        circle_marker_9db5e9cd5a6a1371eeb700ff901c6be3.bindPopup(popup_680dd4441b29d3acf7095ecdd1997155)
+        circle_marker_b7c4cff077bfc7a2048246aada0e5786.bindPopup(popup_be0d58945b242e73f3243a7313522e55)
         ;
 
         
     
     
-            var circle_marker_95e4347d7cae06200f2e64c559699b70 = L.circleMarker(
+            var circle_marker_e496df97b19c98d2c9bc8a7090f6a1c2 = L.circleMarker(
                 [44.235, 8.113],
                 {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 12, "stroke": true, "weight": 3}
-            ).addTo(map_bc9e1fde43b5ed77f50dd86ce97ecd7a);
+            ).addTo(map_3c35f9cbaf6c82979d87efd55f5e362c);
         
     
-        var popup_719dd487d9a8b9ffaac2563d3892123c = L.popup({
+        var popup_9e48b05de727f3046ea2cbfb67f70569 = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_13725020247649f8c162612d20528396 = $(`<div id="html_13725020247649f8c162612d20528396" style="width: 100.0%; height: 100.0%;"><b>Calizzano (SV)</b><br>Probabilità Funghi: <b>3.4%</b><br>Pioggia 7gg: 3.6 mm<br>Vento Max: 24.5 km/h</div>`)[0];
-                popup_719dd487d9a8b9ffaac2563d3892123c.setContent(html_13725020247649f8c162612d20528396);
+                var html_7623e19593f9c197dfd471568d9ecb37 = $(`<div id="html_7623e19593f9c197dfd471568d9ecb37" style="width: 100.0%; height: 100.0%;"><b>Calizzano (SV)</b><br>Probabilità Funghi: <b>3.4%</b><br>Pioggia 7gg: 3.6 mm<br>Vento Max: 24.5 km/h</div>`)[0];
+                popup_9e48b05de727f3046ea2cbfb67f70569.setContent(html_7623e19593f9c197dfd471568d9ecb37);
             
         
 
-        circle_marker_95e4347d7cae06200f2e64c559699b70.bindPopup(popup_719dd487d9a8b9ffaac2563d3892123c)
+        circle_marker_e496df97b19c98d2c9bc8a7090f6a1c2.bindPopup(popup_9e48b05de727f3046ea2cbfb67f70569)
         ;
 
         
     
     
-            var circle_marker_2e4ae55b9259a16e2bee7e59233071d3 = L.circleMarker(
+            var circle_marker_f5857cfc827770a549114c21bf15eb72 = L.circleMarker(
                 [44.547, 9.452],
                 {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 12, "stroke": true, "weight": 3}
-            ).addTo(map_bc9e1fde43b5ed77f50dd86ce97ecd7a);
+            ).addTo(map_3c35f9cbaf6c82979d87efd55f5e362c);
         
     
-        var popup_6152b42d98375c6abf182fddaf3245fc = L.popup({
+        var popup_d2a12a261f7c2e28c16fe17243051ea6 = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_026bd570e40d76411bbc9c6621155231 = $(`<div id="html_026bd570e40d76411bbc9c6621155231" style="width: 100.0%; height: 100.0%;"><b>Santo Stefano d'Aveto (GE)</b><br>Probabilità Funghi: <b>52.0%</b><br>Pioggia 7gg: 92.5 mm<br>Vento Max: 20.0 km/h</div>`)[0];
-                popup_6152b42d98375c6abf182fddaf3245fc.setContent(html_026bd570e40d76411bbc9c6621155231);
+                var html_4f82b1a7a646fa61c22ce44839fe6e97 = $(`<div id="html_4f82b1a7a646fa61c22ce44839fe6e97" style="width: 100.0%; height: 100.0%;"><b>Santo Stefano d'Aveto (GE)</b><br>Probabilità Funghi: <b>52.0%</b><br>Pioggia 7gg: 92.5 mm<br>Vento Max: 20.0 km/h</div>`)[0];
+                popup_d2a12a261f7c2e28c16fe17243051ea6.setContent(html_4f82b1a7a646fa61c22ce44839fe6e97);
             
         
 
-        circle_marker_2e4ae55b9259a16e2bee7e59233071d3.bindPopup(popup_6152b42d98375c6abf182fddaf3245fc)
+        circle_marker_f5857cfc827770a549114c21bf15eb72.bindPopup(popup_d2a12a261f7c2e28c16fe17243051ea6)
         ;
 
         
     
     
-            var circle_marker_2eae8b199231bb91eaa6b2c72bcea9a4 = L.circleMarker(
+            var circle_marker_175cf22adbb09ec07e2d09208cfbf38c = L.circleMarker(
                 [44.52, 9.158],
                 {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 12, "stroke": true, "weight": 3}
-            ).addTo(map_bc9e1fde43b5ed77f50dd86ce97ecd7a);
+            ).addTo(map_3c35f9cbaf6c82979d87efd55f5e362c);
         
     
-        var popup_62fd92dfc94b1ec7e8e492747d229131 = L.popup({
+        var popup_a13294cd6a0301bbb1385da9d90af0b1 = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_e91d9e4c7164879f6d96e34e66336716 = $(`<div id="html_e91d9e4c7164879f6d96e34e66336716" style="width: 100.0%; height: 100.0%;"><b>Torriglia (GE)</b><br>Probabilità Funghi: <b>8.2%</b><br>Pioggia 7gg: 52.7 mm<br>Vento Max: 25.5 km/h</div>`)[0];
-                popup_62fd92dfc94b1ec7e8e492747d229131.setContent(html_e91d9e4c7164879f6d96e34e66336716);
+                var html_db8b5070593656a89191f4cb21b26154 = $(`<div id="html_db8b5070593656a89191f4cb21b26154" style="width: 100.0%; height: 100.0%;"><b>Torriglia (GE)</b><br>Probabilità Funghi: <b>8.2%</b><br>Pioggia 7gg: 52.7 mm<br>Vento Max: 25.5 km/h</div>`)[0];
+                popup_a13294cd6a0301bbb1385da9d90af0b1.setContent(html_db8b5070593656a89191f4cb21b26154);
             
         
 
-        circle_marker_2eae8b199231bb91eaa6b2c72bcea9a4.bindPopup(popup_62fd92dfc94b1ec7e8e492747d229131)
+        circle_marker_175cf22adbb09ec07e2d09208cfbf38c.bindPopup(popup_a13294cd6a0301bbb1385da9d90af0b1)
         ;
 
         
     
     
-            var circle_marker_7d5cfd57600df40ee98828301265ddff = L.circleMarker(
+            var circle_marker_352d1f3cb1907bc5d9afd6e37abe4d5d = L.circleMarker(
                 [44.321, 7.676],
                 {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 12, "stroke": true, "weight": 3}
-            ).addTo(map_bc9e1fde43b5ed77f50dd86ce97ecd7a);
+            ).addTo(map_3c35f9cbaf6c82979d87efd55f5e362c);
         
     
-        var popup_d098f9276a583cfc8ed01a90adc6b010 = L.popup({
+        var popup_ea191d85edb5be7c51a96e982cb72767 = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_7e9e43956ef109c825b029bfed7cc189 = $(`<div id="html_7e9e43956ef109c825b029bfed7cc189" style="width: 100.0%; height: 100.0%;"><b>Chiusa di Pesio (CN)</b><br>Probabilità Funghi: <b>6.1%</b><br>Pioggia 7gg: 13.8 mm<br>Vento Max: 17.8 km/h</div>`)[0];
-                popup_d098f9276a583cfc8ed01a90adc6b010.setContent(html_7e9e43956ef109c825b029bfed7cc189);
+                var html_933248f08357b5ce89dba2d228f0297d = $(`<div id="html_933248f08357b5ce89dba2d228f0297d" style="width: 100.0%; height: 100.0%;"><b>Chiusa di Pesio (CN)</b><br>Probabilità Funghi: <b>6.1%</b><br>Pioggia 7gg: 13.8 mm<br>Vento Max: 17.8 km/h</div>`)[0];
+                popup_ea191d85edb5be7c51a96e982cb72767.setContent(html_933248f08357b5ce89dba2d228f0297d);
             
         
 
-        circle_marker_7d5cfd57600df40ee98828301265ddff.bindPopup(popup_d098f9276a583cfc8ed01a90adc6b010)
+        circle_marker_352d1f3cb1907bc5d9afd6e37abe4d5d.bindPopup(popup_ea191d85edb5be7c51a96e982cb72767)
         ;
 
         
     
     
-            var circle_marker_15f8931f5b337a77e819ab528ecf6b32 = L.circleMarker(
+            var circle_marker_54f4ec3f35e89997580e0a1650dfa7f4 = L.circleMarker(
                 [44.148, 7.913],
                 {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 12, "stroke": true, "weight": 3}
-            ).addTo(map_bc9e1fde43b5ed77f50dd86ce97ecd7a);
+            ).addTo(map_3c35f9cbaf6c82979d87efd55f5e362c);
         
     
-        var popup_f277a75e9135435bfd9354f272612702 = L.popup({
+        var popup_d0ad81d8bf99495eef226f3a1a4d63c4 = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_8c8d34c0248f05bc27ac8d4438509a2f = $(`<div id="html_8c8d34c0248f05bc27ac8d4438509a2f" style="width: 100.0%; height: 100.0%;"><b>Ormea (CN)</b><br>Probabilità Funghi: <b>8.6%</b><br>Pioggia 7gg: 54.3 mm<br>Vento Max: 26.7 km/h</div>`)[0];
-                popup_f277a75e9135435bfd9354f272612702.setContent(html_8c8d34c0248f05bc27ac8d4438509a2f);
+                var html_9d0319cea0ef6cc052bdf898f1423bfa = $(`<div id="html_9d0319cea0ef6cc052bdf898f1423bfa" style="width: 100.0%; height: 100.0%;"><b>Ormea (CN)</b><br>Probabilità Funghi: <b>8.6%</b><br>Pioggia 7gg: 54.3 mm<br>Vento Max: 26.7 km/h</div>`)[0];
+                popup_d0ad81d8bf99495eef226f3a1a4d63c4.setContent(html_9d0319cea0ef6cc052bdf898f1423bfa);
             
         
 
-        circle_marker_15f8931f5b337a77e819ab528ecf6b32.bindPopup(popup_f277a75e9135435bfd9354f272612702)
+        circle_marker_54f4ec3f35e89997580e0a1650dfa7f4.bindPopup(popup_d0ad81d8bf99495eef226f3a1a4d63c4)
         ;
 
         
     
     
-            var circle_marker_e7583352b251950c33732418a59b99d6 = L.circleMarker(
+            var circle_marker_2ded6f78f19f271387c181adfbf9f8af = L.circleMarker(
                 [44.675, 8.469],
                 {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 12, "stroke": true, "weight": 3}
-            ).addTo(map_bc9e1fde43b5ed77f50dd86ce97ecd7a);
+            ).addTo(map_3c35f9cbaf6c82979d87efd55f5e362c);
         
     
-        var popup_61391a29f91ce4521a96fe20d1b8a0fd = L.popup({
+        var popup_5d6c13c1c7ccf9a533bccd543198b456 = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_d66b44d8eea8c7cdc130ecfa2f0d18bb = $(`<div id="html_d66b44d8eea8c7cdc130ecfa2f0d18bb" style="width: 100.0%; height: 100.0%;"><b>Acqui Terme (AL)</b><br>Probabilità Funghi: <b>6.6%</b><br>Pioggia 7gg: 2.0 mm<br>Vento Max: 16.5 km/h</div>`)[0];
-                popup_61391a29f91ce4521a96fe20d1b8a0fd.setContent(html_d66b44d8eea8c7cdc130ecfa2f0d18bb);
+                var html_a4484d743277f44176187f88c8577825 = $(`<div id="html_a4484d743277f44176187f88c8577825" style="width: 100.0%; height: 100.0%;"><b>Acqui Terme (AL)</b><br>Probabilità Funghi: <b>6.6%</b><br>Pioggia 7gg: 2.0 mm<br>Vento Max: 16.5 km/h</div>`)[0];
+                popup_5d6c13c1c7ccf9a533bccd543198b456.setContent(html_a4484d743277f44176187f88c8577825);
             
         
 
-        circle_marker_e7583352b251950c33732418a59b99d6.bindPopup(popup_61391a29f91ce4521a96fe20d1b8a0fd)
+        circle_marker_2ded6f78f19f271387c181adfbf9f8af.bindPopup(popup_5d6c13c1c7ccf9a533bccd543198b456)
         ;
 
         
     
     
-            var circle_marker_ce03e2dbd31c88c20640ca0f3179dd15 = L.circleMarker(
+            var circle_marker_cec587d41fc74d7c7ae9989b66ff2f38 = L.circleMarker(
                 [45.813, 8.258],
                 {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 12, "stroke": true, "weight": 3}
-            ).addTo(map_bc9e1fde43b5ed77f50dd86ce97ecd7a);
+            ).addTo(map_3c35f9cbaf6c82979d87efd55f5e362c);
         
     
-        var popup_00983c6ad0a08bcccc872da2fd2ac2da = L.popup({
+        var popup_33ec556d81ee81009c5062db65957b1e = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_c6050987c972e0e0781da05d46704585 = $(`<div id="html_c6050987c972e0e0781da05d46704585" style="width: 100.0%; height: 100.0%;"><b>Varallo Sesia (VC)</b><br>Probabilità Funghi: <b>6.8%</b><br>Pioggia 7gg: 5.7 mm<br>Vento Max: 15.9 km/h</div>`)[0];
-                popup_00983c6ad0a08bcccc872da2fd2ac2da.setContent(html_c6050987c972e0e0781da05d46704585);
+                var html_fb67dba2a2b6cde2e9f707f1adc06fdd = $(`<div id="html_fb67dba2a2b6cde2e9f707f1adc06fdd" style="width: 100.0%; height: 100.0%;"><b>Varallo Sesia (VC)</b><br>Probabilità Funghi: <b>6.8%</b><br>Pioggia 7gg: 5.7 mm<br>Vento Max: 15.9 km/h</div>`)[0];
+                popup_33ec556d81ee81009c5062db65957b1e.setContent(html_fb67dba2a2b6cde2e9f707f1adc06fdd);
             
         
 
-        circle_marker_ce03e2dbd31c88c20640ca0f3179dd15.bindPopup(popup_00983c6ad0a08bcccc872da2fd2ac2da)
+        circle_marker_cec587d41fc74d7c7ae9989b66ff2f38.bindPopup(popup_33ec556d81ee81009c5062db65957b1e)
         ;
 
         
     
     
-            var heat_map_982db5335ab63597c7d847ddcb84881a = L.heatLayer(
+            var heat_map_6deb447cb22727680ef208944e78159c = L.heatLayer(
                 [[44.478, 8.489, 0.353], [44.235, 8.113, 0.034], [44.547, 9.452, 0.52], [44.52, 9.158, 0.08199999999999999], [44.321, 7.676, 0.061], [44.148, 7.913, 0.086], [44.675, 8.469, 0.066], [45.813, 8.258, 0.068]],
                 {
   "minOpacity": 0.5,
@@ -315,7 +334,7 @@
             );
         
     
-            heat_map_982db5335ab63597c7d847ddcb84881a.addTo(map_bc9e1fde43b5ed77f50dd86ce97ecd7a);
+            heat_map_6deb447cb22727680ef208944e78159c.addTo(map_3c35f9cbaf6c82979d87efd55f5e362c);
         
 </script>
 </html>
