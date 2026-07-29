@@ -73,17 +73,26 @@ HeatMap(heat_data, radius=35, blur=20, max_zoom=10).add_to(m)
 m.save("index.html")
 
 # ==========================================
-# 6. INIEZIONE DEL GATEWAY CON PASSWORD (JS)
+# 6. PROTEZIONE REALE: BLOCCO PRIMA DEL RENDER
 # ==========================================
 script_protezione = f"""
+<style>
+    /* Nasconde tutto finché non viene data la password */
+    html, body {{ display: none !important; }}
+</style>
 <script>
 (function() {{
     const passwordCorretta = "{PASSWORD_SEGRETA}";
     let inserita = prompt("🔒 Questa mappa è privata.\\nInserisci la password di accesso:");
     
-    if (inserita !== passwordCorretta) {{
-        alert("❌ Password errata! Accesso negato.");
-        document.body.innerHTML = "<div style='display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;background:#1a1a1a;color:white;'><h1>🔒 Accesso Negato</h1></div>";
+    if (inserita === passwordCorretta) {{
+        // Password corretta: rende visibile la pagina
+        document.documentElement.style.display = "block";
+        document.body.style.display = "block";
+    }} else {{
+        // Password errata o popup chiuso: distrugge la pagina e mostra errore
+        document.write("<div style='background:#1a1a1a;color:white;height:100vh;display:flex;justify-content:center;align-items:center;font-family:sans-serif;'><h1>🔒 Accesso Negato</h1></div>");
+        window.stop();
     }}
 }})();
 </script>
@@ -92,9 +101,10 @@ script_protezione = f"""
 with open("index.html", "r", encoding="utf-8") as f:
     contenuto_html = f.read()
 
-contenuto_protetto = contenuto_html.replace("</head>", f"{script_protezione}</head>")
+# Inserisce la protezione PRIMA di caricare qualsiasi mappa o stile
+contenuto_protetto = contenuto_html.replace("<head>", f"<head>{script_protezione}")
 
 with open("index.html", "w", encoding="utf-8") as f:
     f.write(contenuto_protetto)
 
-print("Mappa generata e protetta da password con successo!")
+print("Mappa aggiornata con protezione avanzata!")
